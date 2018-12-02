@@ -17,6 +17,8 @@
 
     from nltk.stem import LancasterStemmer
 
+    import pickle
+
     def text_preprocessing(food_name):
 
         # Remove all the special characters
@@ -55,14 +57,12 @@
 
         return line
 
-    menu_sentence = "CALIFORNIA CHOPPED KALE. AVOCADO. RED PEPPER. CUCUMBER. PISTACHIO. WHITE BALSAMIC. GF"
-    text_preprocessing(menu_sentence)
+
     df = pd.read_excel("data/supertrackerfooddatabase.xlsx", sheet_name="Nutrients")
     del df["Action"]
     df.columns
-    feature = '_269 Sugars, total (g)'
-    df.describe()['_269 Sugars, total (g)']
-    df.describe()['_205 Carbohydrate (g)']
+    features = ['_269 Sugars, total (g)', '_205 Carbohydrate (g)']    
+
     nutrients_df = df.dropna()
 
     nutrients_df['foodname'] = nutrients_df.apply(lambda row: text_preprocessing(row['foodname']), axis=1)
@@ -118,6 +118,7 @@
     y_score = clf.predict(x_train_tfidf)
 
     y_score
+    
     def get_breaks_jenks(array, nb_class=5):
 
         breaks = jenkspy.jenks_breaks(array, nb_class)
@@ -125,46 +126,3 @@
         return breaks
 
     breaks = get_breaks_jenks(nutrients_df[feature])
-
-    plt.figure(figsize = (10,8))
-
-    hist = plt.hist(nutrients_df[feature], bins='auto', align='left', color='g')
-
-    for b in breaks:
-
-        plt.vlines(b, ymin=0, ymax = max(hist[0]))
-    breaks
-    labels = ['0.0 - 7.0899',
-
-     '7.0899 - 19.57',
-
-     '19.57 - 35.59',
-
-     '35.59 - 44.59',
-
-     '44.59 - 99.7998']
-    def get_breaks(data, classes):
-
-        sum_vals = sum(data)
-
-        elements_per_interval = int(len(data)/classes)
-
-        data = sorted(data)
-
-        breaks = []
-
-        for i, val in enumerate(data):
-
-            if (i + 1) % elements_per_interval == 0:
-
-                breaks.append(val)
-
-        return breaks
-    breaks = get_breaks(data, 5)
-    plt.figure(figsize = (10,8))
-
-    hist = plt.hist(data, bins='auto', align='left', color='g')
-
-    for b in breaks:
-
-        plt.vlines(b, ymin=0, ymax = max(hist[0]))
